@@ -21,7 +21,7 @@ Every one mapped with **0 rows dropped** except `squad_bn` (see §3) and
 
 ## ⚠️ What you actually need to get — three items, all manual
 
-Jump to §5. **BLUCK**, **BEnQA**, and your **BanglaMedQA**. Nothing else is
+Jump to §5. **BLUCK**, **BEnQA**, and **BanglaMedQA**. Nothing else is
 outstanding.
 
 ---
@@ -116,13 +116,12 @@ Both need a human action, so start them before anything else.
 - Convert to `data/raw/benqa.jsonl` with fields
   `question`, `choices`, `answer_idx`.
 
-### BanglaMedQA — YOURS
+### BanglaMedQA (local file, not used in the paper)
 - Path: `data/raw/banglamedqa.jsonl` (fields: `question`, `choices`, `answer_idx`).
-- Held out entirely, per plan §4a. The contamination guard enforces this.
-- ⚠️ Two public datasets with this name exist on the Hub
-  (`ajwad-abrar/BanglaMedQA`, `Oni279/BanglaMedQA`). If yours derives from either,
-  **say so in the paper** — an undeclared overlap would undermine the clean
-  held-out claim, and it is the kind of thing a reviewer checks.
+- Held out entirely. The contamination guard enforces this.
+- Two public datasets with this name exist on the Hub
+  (`ajwad-abrar/BanglaMedQA`, `Oni279/BanglaMedQA`); any overlap with a local copy
+  should be declared.
 
 ---
 

@@ -158,12 +158,10 @@ _BN = [
         key="banglamedqa", hf_id="LOCAL:data/raw/banglamedqa.jsonl", lang="bn",
         task_type="mcq", role="eval", split="test", mapper="local_jsonl",
         checked=True, holdout_only=True,
-        note="YOUR dataset -- held out entirely (plan 4a). Drop a jsonl here with "
-             "fields: question, choices, answer_idx. NOTE: two public datasets named "
-             "BanglaMedQA also exist on the Hub (ajwad-abrar/BanglaMedQA, "
-             "Oni279/BanglaMedQA). If yours derives from either, say so explicitly in "
-             "the paper -- an undeclared overlap with a public set would undermine the "
-             "'clean held-out' claim.",
+        note="Local Bangla medical MCQ set, held out entirely (not used in the paper). "
+             "Drop a jsonl here with fields: question, choices, answer_idx. Two public "
+             "datasets named BanglaMedQA exist on the Hub (ajwad-abrar/BanglaMedQA, "
+             "Oni279/BanglaMedQA); declare any overlap with them.",
     ),
     DatasetSpec(
         key="flores_bn", hf_id="openlanguagedata/flores_plus", lang="bn",
