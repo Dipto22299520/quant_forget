@@ -1,0 +1,21 @@
+# Core (installed into .venv, inheriting system torch 2.10.0+cu128 for Blackwell sm_120)
+transformers>=4.57
+accelerate>=1.10
+datasets>=3.0
+peft>=0.14
+trl>=0.12
+bitsandbytes>=0.45      # 8-bit optimizers -- required to fit full-FT in 16GB
+scikit-learn>=1.4       # probes, calibration
+scipy>=1.11
+numpy>=1.26
+pandas>=2.0
+matplotlib>=3.8
+pyyaml>=6.0
+tqdm>=4.66
+sacrebleu>=2.4          # self-BLEU
+evaluate>=0.4
+
+# NOT installed / NOT usable on this machine:
+#   vllm        -> no Windows support, no WSL installed. We use HF generate() with
+#                  batched KV-cache instead. ~3-5x slower but correct.
+#   flash-attn  -> no prebuilt Windows wheel for sm_120. We use torch SDPA.

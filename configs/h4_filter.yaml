@@ -1,0 +1,25 @@
+_base_: base.yaml
+
+# H4 arm: run the mitigation that is supposed to prevent collapse, and measure
+# its precision decaying across generations. Sweep `loop.filter` over
+# {selfverify, selfverify_marker} and `train.loss` over {ce, cal, tce}.
+run_name: en_h4_selfverify
+data:
+  lang: en
+  seed_pool: [triviaqa, nq_open, dolly]
+  eval_sets: [popqa]
+
+loop:
+  generations: 5
+  ratio: 1.0
+  # sft_size must be <= prompt_pool_size at ratio 1.0, or the mixer
+  # would top up with real data and silently make this a ~15% synthetic
+  # run instead of 100%. Confirmed in runs/bn_qwen3_r100.
+  sft_size: 3000
+  filter: selfverify
+  # Threshold is chosen ONCE at g0 from the sweep and then held fixed.
+  # Re-tuning per generation would hide the degradation H4 measures.
+  filter_threshold: 0.5
+
+train:
+  loss: ce

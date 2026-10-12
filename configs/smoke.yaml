@@ -1,0 +1,46 @@
+_base_: base.yaml
+
+# Offline smoke test: tiny cached model, tiny everything. Proves the loop runs
+# end to end without a single download. Produces NO scientific result.
+run_name: smoke
+device: cuda
+
+model:
+  name: Qwen/Qwen1.5-0.5B
+  max_len: 384
+
+gen:
+  max_new_tokens: 24
+  batch_size: 8
+  sc_samples: 3
+
+train:
+  mode: lora
+  lr: 2.0e-4
+  epochs: 1
+  per_device_bs: 2
+  grad_accum: 4
+  max_len: 384
+  lora_r: 8
+  lora_alpha: 16
+
+data:
+  lang: en
+  seed_pool: []
+  eval_sets: [popqa]
+  prompt_pool_size: 64
+  real_pool_size: 64
+  eval_size: 64
+  probe_size: 64
+
+loop:
+  generations: 2
+  ratio: 1.0
+  sft_size: 64
+  filter: none
+  keep_checkpoints: true
+
+probe:
+  layer_stride: 6
+  n_splits: 3
+  max_items: 64

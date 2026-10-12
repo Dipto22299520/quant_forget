@@ -1,0 +1,20 @@
+_base_: base.yaml
+
+# English core arm. 5 generations, 100% synthetic. This is the H1 workhorse.
+run_name: en_qwen3_r100
+data:
+  lang: en
+  seed_pool: [triviaqa, nq_open, dolly]
+  eval_sets: [popqa, mmlu_en]
+  prompt_pool_size: 3000
+  real_pool_size: 30000
+  eval_size: 1000
+
+loop:
+  generations: 5
+  ratio: 1.0
+  # sft_size must be <= prompt_pool_size at ratio 1.0, or the mixer
+  # would top up with real data and silently make this a ~15% synthetic
+  # run instead of 100%. Confirmed in runs/bn_qwen3_r100.
+  sft_size: 3000
+  filter: none

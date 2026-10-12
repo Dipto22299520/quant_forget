@@ -1,0 +1,25 @@
+_base_: base.yaml
+
+# Bangla core arm -- the H2 counterpart to en_g5.yaml.
+# NOTE: results from this arm are NOT publication-valid until the Bangla marker
+# lexicon is replaced with native-speaker-elicited values. The pipeline prints a
+# PROVISIONAL warning into every metrics file to keep that visible.
+run_name: bn_qwen3_r100
+data:
+  lang: bn
+  seed_pool: [squad_bn, banglarqa]
+  # Downloadable today. ADD `bluck` here once you have obtained it (see DATASETS.md)
+  # -- it is the culture/history tail set and the most important bn eval we have.
+  eval_sets: [mmmlu_bn, bnmmlu]
+  prompt_pool_size: 3000
+  real_pool_size: 30000
+  eval_size: 1000
+
+loop:
+  generations: 5
+  ratio: 1.0
+  # sft_size must be <= prompt_pool_size at ratio 1.0, or the mixer
+  # would top up with real data and silently make this a ~15% synthetic
+  # run instead of 100%. Confirmed in runs/bn_qwen3_r100.
+  sft_size: 3000
+  filter: none

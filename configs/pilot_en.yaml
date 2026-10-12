@@ -1,0 +1,60 @@
+_base_: base.yaml
+
+# PILOT: full pipeline, small data, many seeds. Purpose is a GO/NO-GO decision on
+# whether H1 is detectable at all before renting bigger GPUs.
+#
+# Deliberately tuned to MAXIMISE the chance of observing collapse, so that a null
+# result is informative rather than merely underpowered:
+#   * open QA, not MCQ  -- sidesteps the option-letter position bias entirely,
+#                          and hedging occurs naturally in free text (Bangla MCQ
+#                          showed a hedge rate of 0.001, nothing to degrade)
+#   * ratio 1.0         -- 100% synthetic, no real-data anchor
+#   * temperature 1.0   -- standard collapse setup; noisier self-training data
+#   * 6 generations     -- one more than the plan's 5, cheap at this size
+#   * 2 epochs          -- accelerates drift per generation
+# If nothing moves under these conditions, it will not move under milder ones.
+run_name: pilot_en
+
+model:
+  name: Qwen/Qwen3-1.7B
+  max_len: 768
+
+gen:
+  max_new_tokens: 32
+  temperature: 1.0
+  top_p: 0.95
+  batch_size: 16
+  sc_samples: 3
+  prompt_style: hedged
+
+train:
+  mode: lora
+  lr: 2.0e-4
+  epochs: 2
+  per_device_bs: 2
+  grad_accum: 8
+  max_len: 768
+  lora_r: 16
+  lora_alpha: 32
+
+data:
+  lang: en
+  seed_pool: [triviaqa, nq_open]
+  eval_sets: [popqa]
+  prompt_pool_size: 500
+  real_pool_size: 500
+  eval_size: 300
+  probe_size: 300
+
+loop:
+  generations: 6
+  ratio: 1.0
+  sft_size: 500
+  filter: none
+  keep_checkpoints: false
+  chain: weights
+
+probe:
+  layer_stride: 4
+  n_splits: 4
+  max_items: 300

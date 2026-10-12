@@ -1,0 +1,26 @@
+_base_: pilot_bn.yaml
+
+# MCQ pilot. Same self-training regime as pilot_en.yaml -- only the EVAL changes,
+# from open-QA PopQA to item-matched Global-MMLU.
+#
+# Why this eval instead: measured on Qwen3-1.7B, 400 items, format-independent
+# letter scoring with position-bias debiasing --
+#     EN acc 0.550, ECE 0.413, AUROC 0.693
+#     BN acc 0.343, ECE 0.532, AUROC 0.601   (both vs 0.250 chance)
+# Bangla open QA gave 0.011, i.e. no room for accuracy to fall, which made H1
+# untestable. Global-MMLU also carries the SAME items in both languages, so the
+# H2 matched-baseline comparison holds by construction rather than by subsampling.
+#
+# Training prompts stay open-QA (triviaqa/nq_open) so the collapse regime is
+# unchanged from the pilot that already ran. They are a different corpus from
+# Global-MMLU, so the contamination guard stays quiet.
+run_name: pilot_mmlu_bn
+
+gen:
+  sc_samples: 1        # p_correct is exact for MCQ; self-consistency adds cost, not signal
+
+data:
+  lang: bn
+  seed_pool: [squad_bn]
+  eval_sets: [global_mmlu_bn]
+  eval_size: 400

@@ -1,0 +1,69 @@
+run_name: base
+out_dir: runs
+seed: 0
+device: cuda
+
+model:
+  name: Qwen/Qwen3-1.7B
+  dtype: bfloat16
+  attn_impl: sdpa
+  trust_remote_code: false
+  max_len: 1024
+
+gen:
+  max_new_tokens: 48
+  temperature: 0.7
+  top_p: 0.9
+  do_sample: true
+  batch_size: 16
+  sc_samples: 5
+  sc_temperature: 1.0
+  prompt_style: hedged
+  seed: 0
+
+train:
+  mode: lora
+  lr: 1.0e-4
+  epochs: 1
+  per_device_bs: 1
+  grad_accum: 16
+  max_len: 1024
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  optim: paged_adamw_8bit
+  grad_ckpt: true
+  loss: ce
+  cal_gamma: 1.0
+  tce_threshold: 0.95
+  seed: 0
+
+data:
+  lang: en
+  seed_pool: [triviaqa, nq_open, dolly]
+  eval_sets: [popqa]
+  prompt_pool_size: 3000
+  real_pool_size: 30000
+  eval_size: 1000
+  probe_size: 2000
+  cache_dir: data/cache
+
+loop:
+  generations: 5
+  ratio: 1.0
+  sft_size: 30000
+  filter: none
+  filter_threshold: 0.5
+  keep_checkpoints: false
+  # weights = degradation compounds in weights AND data (default, stronger signal)
+  # data_only = every generation restarts from base; collapse travels via data only
+  chain: weights
+
+probe:
+  layer_stride: 4
+  kind: logistic
+  C: 1.0
+  n_splits: 5
+  max_items: 2000

@@ -1,0 +1,25 @@
+# Code release only. Large or local material stays out of the repository.
+# Patterns are anchored to the repository root so that code folders such as
+# src/collapse/data/ are not caught by them.
+/.venv/
+/runs/
+/runs_backup_stageA/
+/backups/
+/data/
+/logs/
+/output/
+/tmp/
+/tools/
+
+# Manuscript, internal notes and planning documents (not part of the code release)
+/paper/
+/docs/
+/plan.md
+/scripts/revise_supervisor.py
+*.zip
+/abstract_plain.txt
+
+# Python byproducts
+__pycache__/
+*.pyc
+.pytest_cache/

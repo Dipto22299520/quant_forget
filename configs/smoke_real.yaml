@@ -1,0 +1,47 @@
+_base_: base.yaml
+
+# Real-data smoke test: small but genuine. Uses the cached 0.5B model against
+# real PopQA + Dolly so the download -> map -> generate -> grade -> train path is
+# exercised for real. Still NOT a scientific result (model too small, n too small).
+run_name: smoke_real
+
+model:
+  name: Qwen/Qwen1.5-0.5B
+  max_len: 512
+
+gen:
+  max_new_tokens: 24
+  batch_size: 8
+  sc_samples: 3
+
+train:
+  mode: lora
+  lr: 2.0e-4
+  per_device_bs: 2
+  grad_accum: 4
+  max_len: 512
+  lora_r: 8
+  lora_alpha: 16
+
+data:
+  lang: en
+  seed_pool: [dolly]
+  eval_sets: [popqa]
+  prompt_pool_size: 200
+  real_pool_size: 200
+  eval_size: 200
+  probe_size: 200
+
+loop:
+  generations: 2
+  ratio: 0.5
+  sft_size: 200
+  filter: selfverify
+  filter_threshold: 0.4
+  keep_checkpoints: true
+  chain: weights
+
+probe:
+  layer_stride: 6
+  n_splits: 3
+  max_items: 200

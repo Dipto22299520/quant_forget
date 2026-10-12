@@ -1,0 +1,68 @@
+_base_: base.yaml
+
+# MAIN STUDY -- Bangla arm (item-matched counterpart of main_en).
+#
+# Eval is item-matched Global-MMLU, chosen after the pilot showed Bangla open QA
+# sat at 1.1% accuracy (no room for accuracy to fall, so H1 was untestable) while
+# Global-MMLU gives EN 0.550 / BN 0.343 against 0.250 chance, on the SAME items
+# in both languages.
+#
+# sft_size == prompt_pool_size so ratio 1.0 is honourable without topping up with
+# real data. The historical r100 arm requested 20k pairs from a 3k pool and
+# silently trained on 15% synthetic; build_sft_mix now refuses that.
+run_name: main_bn
+
+# CONTEXT WINDOW. squad_bn prompts carry a passage: median 938 tokens, p90 1458
+# under the Qwen tokenizer. At 768 the tokenizer right-truncated 75% of them --
+# dropping the question and the assistant marker, so the model continued the
+# passage instead of answering, and 75% of every Bangla synthetic target was
+# passage continuation. English closed-book prompts (max 93 tokens) never hit
+# this. 1536 fits 90% intact; the rest have the PASSAGE trimmed (fit_prompt),
+# never the question. Every Bangla arm run at 768 is invalid and was re-run.
+model:
+  name: Qwen/Qwen3-1.7B
+  max_len: 1536
+
+gen:
+  max_new_tokens: 32
+  temperature: 1.0
+  top_p: 0.95
+  batch_size: 16
+  sc_samples: 1          # p_pred is exact for MCQ; self-consistency adds cost, not signal
+  prompt_style: hedged
+
+train:
+  mode: lora
+  lr: 2.0e-4
+  epochs: 2
+  # Same 16-sequence effective batch as English; the micro-batch is halved
+  # because sequences are twice as long (weighted_lm_loss materialises fp32
+  # logits: bs x seq x 152k vocab).
+  per_device_bs: 4
+  grad_accum: 4
+  max_len: 1536
+  lora_r: 16
+  lora_alpha: 32
+
+data:
+  lang: bn
+  seed_pool: [squad_bn]
+  eval_sets: [global_mmlu_bn]
+  prompt_pool_size: 3000
+  real_pool_size: 6000
+  eval_size: 600
+  probe_size: 600
+
+loop:
+  generations: 6
+  ratio: 1.0
+  sft_size: 3000
+  filter: none
+  keep_checkpoints: false
+  chain: weights
+  strict_ratio: true
+
+probe:
+  layer_stride: 4
+  n_splits: 5
+  max_items: 600
